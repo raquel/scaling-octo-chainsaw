@@ -1,0 +1,26 @@
+
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: external-api-caller
+  namespace: default
+spec:
+  schedule: "*/5 * * * *"  # Every 5 minutes
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: api-caller
+            image: curlimages/curl:latest
+            command:
+            - /bin/sh
+            - -c
+            - |
+              echo "Calling external API at $(date)"
+              curl -f -H "Authorization: Bearer valid-token-123" \
+                   http://user-management-service:8080/external-api/data || \
+              echo "Failed to call external API"
+          restartPolicy: OnFailure
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 1

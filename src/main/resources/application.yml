@@ -1,0 +1,57 @@
+
+spring:
+  application:
+    name: user-management-app
+  
+  datasource:
+    url: jdbc:h2:mem:testdb
+    driver-class-name: org.h2.Driver
+    username: sa
+    password: password
+  
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+  
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+  
+  security:
+    user:
+      name: admin
+      password: admin123
+
+server:
+  port: 8080
+
+# External API Configuration
+external:
+  api:
+    url: ${EXTERNAL_API_URL:http://localhost:8080/external-api/data}
+    interval: ${EXTERNAL_API_INTERVAL:60000}
+
+# Logging Configuration
+logging:
+  level:
+    com.example.usermanagement: DEBUG
+    org.springframework.security: DEBUG
+    org.hibernate.SQL: DEBUG
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n"
+
+# Management endpoints
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+  endpoint:
+    health:
+      show-details: always

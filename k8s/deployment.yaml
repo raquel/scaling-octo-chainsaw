@@ -1,0 +1,63 @@
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: user-management-app
+  namespace: default
+  labels:
+    app: user-management-app
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: user-management-app
+  template:
+    metadata:
+      labels:
+        app: user-management-app
+    spec:
+      containers:
+      - name: user-management-app
+        image: user-management-app:latest
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 8080
+          name: http
+        env:
+        - name: EXTERNAL_API_URL
+          valueFrom:
+            configMapKeyRef:
+              name: user-management-config
+              key: EXTERNAL_API_URL
+        - name: EXTERNAL_API_INTERVAL
+          valueFrom:
+            configMapKeyRef:
+              name: user-management-config
+              key: EXTERNAL_API_INTERVAL
+        - name: SPRING_PROFILES_ACTIVE
+          valueFrom:
+            configMapKeyRef:
+              name: user-management-config
+              key: SPRING_PROFILES_ACTIVE
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "250m"
+          limits:
+            memory: "1Gi"
+            cpu: "500m"
+        livenessProbe:
+          httpGet:
+            path: /actuator/health
+            port: 8080
+          initialDelaySeconds: 60
+          periodSeconds: 30
+          timeoutSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /actuator/health
+            port: 8080
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+      restartPolicy: Always

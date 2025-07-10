@@ -1,0 +1,10 @@
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: user-management-config
+  namespace: default
+data:
+  EXTERNAL_API_URL: "http://user-management-service:8080/external-api/data"
+  EXTERNAL_API_INTERVAL: "60000"
+  SPRING_PROFILES_ACTIVE: "production"
